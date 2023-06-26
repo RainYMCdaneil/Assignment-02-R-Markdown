@@ -1,0 +1,34 @@
+# install packages if not already installed
+if(!require(ggplot2)) install.packages('ggplot2')
+if(!require(lubridate)) install.packages('lubridate')
+if(!require(dplyr)) install.packages('dplyr')
+
+# load required packages
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+
+# load data
+data <- read.csv('new-voter-registrations.csv')
+
+# convert month to numeric format
+data$Month <- match(data$Month, month.abb)
+
+# create date from Year and Month
+data$Date <- as.Date(paste(data$Year, data$Month, "01", sep = "-"), "%Y-%m-%d")
+
+
+# plot data (line plot)
+ggplot(data, aes(x = Date, y = New.registered.voters, color = Jurisdiction)) +
+  geom_line() +
+  labs(title = 'Trend of New Registered Voters Over Time for Each Jurisdiction',
+       x = 'Date', y = 'New Registered Voters') +
+  theme_minimal()
+
+# plot data as bar chart
+ggplot(data, aes(x = Date, y = New.registered.voters, fill = Jurisdiction)) +
+  geom_bar(stat = "identity") +
+  labs(title = 'New Registered Voters Over Time for Each Jurisdiction',
+       x = 'Date', y = 'New Registered Voters') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))

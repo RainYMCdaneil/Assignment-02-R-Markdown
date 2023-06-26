@@ -1,0 +1,65 @@
+---
+title: "ANA 515 Assignment 2"
+author: "Xiaoyu Yang"
+date: "2023-06-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Description of the data
+
+This data shows how many people registered to vote in early 2020 vs. early 2016 in 11 states and Washington, D.C. (As far as we could tell, this data was unavailable for other states.) We have data from January through April for all 12 of the jurisdictions, and data through May for four states and Washington D.C.It is a CSV file, 
+
+This data was sent to us by the Center for Innovation and Research, which collected it for this report. In addition, the data in Florida, Maryland, North Carolina, Virginia and Washington, D.C., is publicly available.
+
+```{r echo=FALSE}
+library(bslib)
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+#Note use the readr package and read_csv function for the data
+library(readr)
+
+url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/voter-registration/new-voter-registrations.csv"
+
+
+data <- read_csv(url)
+```
+
+```{r echo=FALSE}
+data <- data[-1, ]
+months <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+months_as_numbers <- match(months, month.abb)
+months_as_numbers
+
+```
+```{r echo=FALSE}
+num_rows <- nrow(data)
+num_cols <- ncol(data)
+
+column_descriptions <- data.frame(
+  `Column Name` = names(data),
+  `Description` = c(
+    "State",
+    "Year",
+    "Month",
+    "New registered voters"
+  )
+)
+
+kable(column_descriptions)
+```
+## This data set has `r nrow(data)` rows and `r ncol(data)` columns.
+
+```{r}
+library(dplyr)
+
+df <- data %>% select(Year, Month, `New registered voters`)
+
+summaries <- df %>%
+  summarise_all(list(min = min, max = max, mean = mean, n_missing = function(x) sum(is.na(x))))
+
+summaries
